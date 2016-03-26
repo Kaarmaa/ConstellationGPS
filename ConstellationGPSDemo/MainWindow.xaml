@@ -33,18 +33,14 @@
         </Grid.RowDefinitions>
         <ComboBox x:Name="cb_Port" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" Margin="5"/>
         <ComboBox x:Name="cb_Baud" Grid.Column="2" Grid.Row="3" Grid.RowSpan="3" Margin="5"/>
-        <Label x:Name="label" Content="Port:" VerticalContentAlignment="Center" Padding="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"/>
-        <Label x:Name="label_Copy" Content="Baud:" VerticalContentAlignment="Center" Padding="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.Row="3" Grid.RowSpan="3"/>
+        <Label x:Name="label" Content="Port:" VerticalContentAlignment="Center" Padding="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="5"/>
+        <Label x:Name="label_Copy" Content="Baud:" VerticalContentAlignment="Center" Padding="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.Row="3" Grid.RowSpan="3" Margin="5"/>
         <TextBox x:Name="tb_OutputWindow"  TextWrapping="Wrap" Background="Azure" Grid.Column="6" Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="6" VerticalScrollBarVisibility="Auto"/>
         <DataGrid x:Name="dataGrid" ColumnWidth="*" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="9"/>
         <Button x:Name="btn_Start" Content="Start" Click="btn_Start_Click" Grid.Column="3" Grid.Row="0"  Margin="5" Grid.RowSpan="3"/>
         <Button x:Name="btn_Stop" Content="Stop" Click="btn_Stop_Click" Grid.Column="3" Grid.Row="3" Grid.RowSpan="3" Margin="5"/>
-        <RadioButton x:Name="rb_GPRMC" Content="$GPRMC" Checked="rb_GPRMC_Checked" VerticalContentAlignment="Center" IsChecked="True" Grid.Column="4" Grid.Row="0" Grid.RowSpan="2"/>
-        <RadioButton x:Name="rb_GPGGA" Content="$GPGGA" Checked="rb_GPGGA_Checked" VerticalContentAlignment="Center" Grid.Column="4" Grid.Row="2" Grid.RowSpan="2"/>
-        <RadioButton x:Name="rb_GPGSA" Content="$GPGSA" Checked="rb_GPGSA_Checked" VerticalContentAlignment="Center" Grid.Column="4" Grid.Row="4" Grid.RowSpan="2"/>
-        <RadioButton x:Name="radioButton_Copy2" Content="TBD" VerticalContentAlignment="Center" IsEnabled="False" Grid.Column="5" Grid.Row="0" Grid.RowSpan="2"/>
-        <RadioButton x:Name="radioButton_Copy3" Content="TBD" VerticalContentAlignment="Center" IsEnabled="False" Grid.Column="5" Grid.Row="2" Grid.RowSpan="2"/>
-        <RadioButton x:Name="radioButton_Copy4" Content="TBD" VerticalContentAlignment="Center" IsEnabled="False" Grid.Column="5" Grid.Row="4" Grid.RowSpan="2"/>
+        <ComboBox x:Name="cb_available_msgs" Grid.Column="4" Grid.Row="3" Grid.RowSpan="3" Margin="5,0,5,5" Grid.ColumnSpan="2" SelectionChanged="cb_available_msgs_SelectionChanged"/>
+        <Label x:Name="label_Copy1" Content="Available Messages:" VerticalContentAlignment="Center" Margin="5" Padding="2" HorizontalContentAlignment="Left" Grid.Column="4" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="2" />
 
     </Grid>
 </Window>

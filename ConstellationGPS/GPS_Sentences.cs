@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace NSConstellationGPS.GPS_Sentences
 {
@@ -16,7 +17,8 @@ namespace NSConstellationGPS.GPS_Sentences
 
         private GPS_Sentence_GPGSA _gpgsa;
         public GPS_Sentence_GPGSA GPGSA { get { return _gpgsa; } set { _gpgsa = value; OnPropertyChanged("GPGSA"); } }
-
+        
+        private ObservableCollection<string> avMsgs = new ObservableCollection<string>();
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
@@ -31,6 +33,8 @@ namespace NSConstellationGPS.GPS_Sentences
 
         public GPS_Sentence_Master()
         {
+            avMsgs.Clear();
+
             _gprmc = new GPS_Sentence_GPRMC();
             _gpgga = new GPS_Sentence_GPGGA();
             _gpgsa = new GPS_Sentence_GPGSA();
@@ -38,6 +42,14 @@ namespace NSConstellationGPS.GPS_Sentences
 
         public bool Parse(string[] split)
         {
+            foreach(string s in split)
+            {
+                if (s.Length > 0 && s[0] == '$' && !avMsgs.Contains(s))
+                {
+                    avMsgs.Add(s);
+                }
+            }
+                
             int error = 0;
             if(_gprmc.Parse(split)) error++;
             if(_gpgga.Parse(split)) error++;
@@ -45,6 +57,11 @@ namespace NSConstellationGPS.GPS_Sentences
 
 
             return (error == 0);
+        }
+
+        public ObservableCollection<string> getAvailableMessages()
+        {
+            return avMsgs;
         }
     }
 
@@ -275,7 +292,9 @@ namespace NSConstellationGPS.GPS_Sentences
         }
     }
 
-
+    /// <summary>
+    /// GPGSA Sentence Structure
+    /// </summary>
     public class GPS_Sentence_GPGSA : GPS_Sentence_Base
     {
         // Mode1 (M = Manual, A = Automatic)

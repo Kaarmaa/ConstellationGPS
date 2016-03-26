@@ -35,7 +35,6 @@ namespace NSConstellationGPSDemo
             // Setup UI 
             cb_Port.ItemsSource = SerialPort.GetPortNames();
             cb_Baud.ItemsSource = _baudrates;
-            dataGrid.ItemsSource = Collection_GPRMC;
 
             // Init Timer
             timer = new DispatcherTimer();
@@ -56,7 +55,12 @@ namespace NSConstellationGPSDemo
                 Collection_GPGSA.Add(GPS.getGPGSA());
 
                 // UI Scroll to most recent item
-                dataGrid.ScrollIntoView(dataGrid.Items[dataGrid.Items.Count - 1]);
+                if(dataGrid.ItemsSource != null)
+                    dataGrid.ScrollIntoView(dataGrid.Items[dataGrid.Items.Count - 1]);
+
+
+                cb_available_msgs.ItemsSource = GPS.getAvailableMessages();
+                cb_available_msgs.UpdateLayout();
             }
             else
             {
@@ -80,6 +84,7 @@ namespace NSConstellationGPSDemo
 
                 // Reconfigure Port as UI specifies
                 GPS = new ConstellationGPS(cb_Port.SelectedItem.ToString(), Convert.ToInt32(cb_Baud.SelectedValue));
+
 
                 // Open new port
                 GPS.Open();
@@ -155,21 +160,6 @@ namespace NSConstellationGPSDemo
         }
 
 
-        private void rb_GPRMC_Checked(object sender, RoutedEventArgs e)
-        {
-            dataGrid.ItemsSource = Collection_GPRMC;
-        }
-
-        private void rb_GPGGA_Checked(object sender, RoutedEventArgs e)
-        {
-            dataGrid.ItemsSource = Collection_GPGGA;
-        }
-        
-        private void rb_GPGSA_Checked(object sender, RoutedEventArgs e)
-        {
-            dataGrid.ItemsSource = Collection_GPGSA;
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             timer.Stop();
@@ -182,6 +172,29 @@ namespace NSConstellationGPSDemo
         {
             tb_OutputWindow.Text += s;
             tb_OutputWindow.ScrollToEnd();
+        }
+
+        private void cb_available_msgs_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            switch (cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString())
+            {
+                case "$GPRMC":
+                    dataGrid.ItemsSource = Collection_GPRMC;
+                    break;
+                case "$GPGGA":
+                    dataGrid.ItemsSource = Collection_GPGGA;
+                    break;
+                case "$GPGSA":
+                    dataGrid.ItemsSource = Collection_GPGSA;
+                    break;
+                case "$GPGSV":
+                    dataGrid.ItemsSource = null;
+                    Write_to_OutputWindow("$GPGSV Parsing unavailable.\n");
+                    break;
+                default:
+                    dataGrid.ItemsSource = null;
+                    break;
+            }
         }
     }
 }

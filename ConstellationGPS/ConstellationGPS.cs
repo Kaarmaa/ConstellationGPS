@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
+using System.Collections.ObjectModel;
 
 using NSConstellationGPS.GPS_Sentences;
 
@@ -58,7 +59,7 @@ namespace NSConstellationGPS
             _gps_comm.StopBits = StopBits.One;
             _gps_comm.Parity = Parity.None;
             _gps_comm.ReadTimeout = timeout;
-
+            
             _initialized = true;
         }
 
@@ -175,6 +176,11 @@ namespace NSConstellationGPS
             return version.Version;
         }
 
+        public ObservableCollection<string> getAvailableMessages()
+        {
+            return master.getAvailableMessages();
+        }
+
         /// <summary>
         /// Gets a copy of the newest master.GPRMC sentence and returns it to caller 
         /// </summary>
@@ -199,7 +205,7 @@ namespace NSConstellationGPS
         }
 
         /// <summary>
-        /// Gets a copy of the newest master.GPRMC sentence and returns it to caller 
+        /// Gets a copy of the newest master.GPGGA sentence and returns it to caller 
         /// </summary>
         /// <returns></returns>
         public GPS_Sentence_GPGGA getGPGGA()
@@ -223,7 +229,11 @@ namespace NSConstellationGPS
 
             return tmp;
         }
-
+        
+        /// <summary>
+        /// Gets a copy of the newest master.GPGSA sentence and returns it to caller 
+        /// </summary>
+        /// <returns></returns>
         public GPS_Sentence_GPGSA getGPGSA()
         {
             GPS_Sentence_GPGSA tmp = new GPS_Sentence_GPGSA();
