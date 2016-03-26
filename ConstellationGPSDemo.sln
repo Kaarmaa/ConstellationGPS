@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstellationGPSDemo", "ConstellationGPSDemo\ConstellationGPSDemo.csproj", "{1F455425-A0C2-4A94-8196-39C3023545DD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6097A663-9C7B-4D3E-8658-998E72A2A283} = {6097A663-9C7B-4D3E-8658-998E72A2A283}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstellationGPS", "ConstellationGPS\ConstellationGPS.csproj", "{6097A663-9C7B-4D3E-8658-998E72A2A283}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F455425-A0C2-4A94-8196-39C3023545DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F455425-A0C2-4A94-8196-39C3023545DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F455425-A0C2-4A94-8196-39C3023545DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F455425-A0C2-4A94-8196-39C3023545DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6097A663-9C7B-4D3E-8658-998E72A2A283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6097A663-9C7B-4D3E-8658-998E72A2A283}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6097A663-9C7B-4D3E-8658-998E72A2A283}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6097A663-9C7B-4D3E-8658-998E72A2A283}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

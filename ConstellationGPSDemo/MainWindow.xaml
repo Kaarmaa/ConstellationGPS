@@ -1,0 +1,20 @@
+﻿<Window x:Class="NSConstellationGPSDemo.ConstellationGPSDemoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NSConstellationGPSDemo"
+        mc:Ignorable="d"
+        Title="Constellation GPS Demo" Height="350" Width="525">
+    <Grid>
+        <ComboBox x:Name="cb_Port" HorizontalAlignment="Left" Margin="53,10,0,0" VerticalAlignment="Top" Width="75"/>
+        <ComboBox x:Name="cb_Baud" HorizontalAlignment="Left" Margin="53,37,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label x:Name="label" Content="Port:" Padding="2" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="38" Height="22"/>
+        <Label x:Name="label_Copy" Content="Baud:" Padding="2" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="38" Height="22"/>
+        <TextBlock x:Name="tb_OutputWindow" Margin="213,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Background="Beige" Height="49"/>
+        <DataGrid x:Name="dataGrid" Margin="10,64,10,10"/>
+        <Button x:Name="btn_Open" Content="Open" HorizontalAlignment="Left" Margin="133,10,0,0" VerticalAlignment="Top" Width="75" Height="22" Click="btn_Open_Click" />
+        <Button x:Name="btn_Close" Content="Close" HorizontalAlignment="Left" Margin="133,37,0,0" VerticalAlignment="Top" Width="75" Height="22" Click="btn_Close_Click"/>
+
+    </Grid>
+</Window>
