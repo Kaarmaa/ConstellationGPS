@@ -204,6 +204,32 @@ namespace NSConstellationGPS
         }
 
         /// <summary>
+        /// Gets a copy of the newest master.GPRMC sentence and returns it to caller 
+        /// </summary>
+        /// <returns></returns>
+        public GPS_Sentence_GPGGA getGPGGA()
+        {
+            GPS_Sentence_GPGGA tmp = new GPS_Sentence_GPGGA();
+
+            tmp.Age_From_Last_Update_s = master.GPGGA.Age_From_Last_Update_s;
+            tmp.Altitude = master.GPGGA.Altitude;
+            tmp.Altitude_Unit = master.GPGGA.Altitude_Unit;
+            tmp.Checksum = master.GPGGA.Checksum;
+            tmp.Diff_Reference_Station_ID = master.GPGGA.Diff_Reference_Station_ID;
+            tmp.Geoidal_Separation = master.GPGGA.Geoidal_Separation;
+            tmp.Geoidal_Separation_Unit = master.GPGGA.Geoidal_Separation_Unit;
+            tmp.Horizontal_Dilution = master.GPGGA.Horizontal_Dilution;
+            tmp.Latitude = master.GPGGA.Latitude;
+            tmp.Longitude = master.GPGGA.Longitude;
+            tmp.Quality = master.GPGGA.Quality;
+            tmp.Satellite_Count = master.GPGGA.Satellite_Count;
+            tmp.Time = master.GPGGA.Time;
+            tmp.Type = master.GPGGA.Type;
+
+            return tmp;
+        }
+
+        /// <summary>
         /// Custom Error catching function
         /// </summary>
         /// <param name="ex"></param>
