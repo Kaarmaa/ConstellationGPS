@@ -14,8 +14,7 @@ namespace NSConstellationGPS.GPS_Sentences
     {
         private GPS_Sentence_GPRMC _gprmc;
         public GPS_Sentence_GPRMC GPRMC { get { return _gprmc; } set { _gprmc = value; OnPropertyChanged("Time"); } }
-
-
+        
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name)
@@ -26,12 +25,25 @@ namespace NSConstellationGPS.GPS_Sentences
                 handler(this, new PropertyChangedEventArgs(name));
             }
         }
+
+        public GPS_Sentence_Master()
+        {
+            _gprmc = new GPS_Sentence_GPRMC();
+        }
+
+        public bool Parse(string[] split)
+        {
+            int error = 0;
+            if(_gprmc.Parse(split)) error++;
+
+            return (error == 0);
+        }
     }
 
     /// <summary>
     /// Base class for GPS sentences. 
     /// </summary>
-    class GPS_Sentence_Base : INotifyPropertyChanged
+    public class GPS_Sentence_Base : INotifyPropertyChanged
     {
         private string _type;
         public string Type { get { return _type; } set { _type = value; OnPropertyChanged("Type"); } }
@@ -46,12 +58,39 @@ namespace NSConstellationGPS.GPS_Sentences
                 handler(this, new PropertyChangedEventArgs(name));
             }
         }
+
+        public double String_to_Double(string s)
+        {
+            if (s.CompareTo("") != 0)
+            {
+                return Convert.ToDouble(s);
+            }
+            return -0;
+        }
+
+        public int String_to_Int(string s)
+        {
+            if (s.CompareTo("") != 0)
+            {
+                return Convert.ToInt32(s);
+            }
+            return -0;
+        }
+
+        public char String_to_Char(string s)
+        {
+            if (s.CompareTo("") != 0)
+            {
+                return Convert.ToChar(s);
+            }
+            return ' ';
+        }
     }
 
     /// <summary>
     /// GPRMC Sentence Structure
     /// </summary>
-    class GPS_Sentence_GPRMC : GPS_Sentence_Base
+    public class GPS_Sentence_GPRMC : GPS_Sentence_Base
     {
         private string _time;
         public string Time { get { return _time; } set { _time = value;  OnPropertyChanged("Time"); } }
@@ -82,5 +121,48 @@ namespace NSConstellationGPS.GPS_Sentences
 
         private string _checksum;
         public string Checksum { get { return _checksum; } set { _checksum = value; OnPropertyChanged("Checksum"); } }
+
+        public bool Parse(string[] buffer)
+        {
+            bool valid_data = false;
+            double buf, degrees, minutes;
+
+            for (int i = 0; i < buffer.Length - 14; i++)
+            {
+                if(String.Compare(buffer[i],"$GPRMC") == 0)
+                {
+
+                    Type        = "$GPRMC";
+                    Time        = buffer[i + 1];
+                    Status      = buffer[i + 2][0];
+
+                    buf = String_to_Double(buffer[i + 3]);
+                    degrees = Math.Floor(buf / 100.0);
+                    minutes = (buf - (degrees * 100)) / 60.0;
+                    Latitude = degrees + minutes;
+                    if (String_to_Char(buffer[i + 4]) == 'S')
+                        Latitude *= -1;
+
+                    buf = String_to_Double(buffer[i + 5]);
+                    degrees = Math.Floor(buf / 100.0);
+                    minutes = (buf - (degrees * 100)) / 60.0;
+                    Longitude = degrees + minutes;
+                    if (String_to_Char(buffer[i + 6]) == 'W')
+                        Longitude *= -1;
+
+                    Speed       = String_to_Double(buffer[i + 7]);
+                    Course      = String_to_Double(buffer[i + 8]);
+                    Date        = String_to_Int(buffer[i + 9]);
+                    Magnetic    = 0.0; //TODO: Magnetic
+                    Fix         = buffer[i + 12][0];
+                    Checksum    = "*" + buffer[i + 13];
+
+                    valid_data = true;
+                }
+            }
+            return valid_data;
+        }
     }
+
+    
 }

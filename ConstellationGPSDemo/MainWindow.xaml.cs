@@ -13,7 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO.Ports;
+using System.Windows.Threading;
 using NSConstellationGPS;
+using NSConstellationGPS.GPS_Sentences;
+using System.Collections.ObjectModel;
 
 namespace NSConstellationGPSDemo
 {
@@ -25,7 +28,8 @@ namespace NSConstellationGPSDemo
         // These are the default ports as provided by National Instruments
         private int[] _baudrates = new int[] { 110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 56000, 57600, 115200 };
         private ConstellationGPS GPS;
-
+        private DispatcherTimer timer;
+        private ObservableCollection<GPS_Sentence_GPRMC> collection = new ObservableCollection<GPS_Sentence_GPRMC>();
         public ConstellationGPSDemoWindow()
         {
             InitializeComponent();
@@ -33,6 +37,19 @@ namespace NSConstellationGPSDemo
             // Setup UI 
             cb_Port.ItemsSource = SerialPort.GetPortNames();
             cb_Baud.ItemsSource = _baudrates;
+
+            dataGrid.ItemsSource = collection;
+
+            timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 0, 1);
+            timer.Tick += new EventHandler(timer_tick);
+        }
+
+        private void timer_tick(object obj, EventArgs sender)
+        {
+            int x = GPS.ReadGPS();
+            collection.Add(GPS.getGPRMC());
+            dataGrid.ScrollIntoView(dataGrid.Items[dataGrid.Items.Count - 1]);
         }
 
         /// <summary>
@@ -54,10 +71,13 @@ namespace NSConstellationGPSDemo
                 // Open new port
                 GPS.Open();
 
+                timer.Start();
+
             }
             catch(Exception ex)
             {
                 ErrorCatch(ex);
+                timer.Stop();
             }
         }
 
@@ -77,6 +97,7 @@ namespace NSConstellationGPSDemo
             catch(Exception ex)
             {
                 ErrorCatch(ex);
+                timer.Stop();
             }
         }
 
