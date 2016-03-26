@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
 
 namespace NSConstellationGPS.GPS_Sentences
@@ -17,7 +13,10 @@ namespace NSConstellationGPS.GPS_Sentences
 
         private GPS_Sentence_GPGGA _gpgga;
         public GPS_Sentence_GPGGA GPGGA { get { return _gpgga; } set { _gpgga = value; OnPropertyChanged("GPGGA"); } }
-        
+
+        private GPS_Sentence_GPGSA _gpgsa;
+        public GPS_Sentence_GPGSA GPGSA { get { return _gpgsa; } set { _gpgsa = value; OnPropertyChanged("GPGSA"); } }
+
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
@@ -34,6 +33,7 @@ namespace NSConstellationGPS.GPS_Sentences
         {
             _gprmc = new GPS_Sentence_GPRMC();
             _gpgga = new GPS_Sentence_GPGGA();
+            _gpgsa = new GPS_Sentence_GPGSA();
         }
 
         public bool Parse(string[] split)
@@ -41,7 +41,8 @@ namespace NSConstellationGPS.GPS_Sentences
             int error = 0;
             if(_gprmc.Parse(split)) error++;
             if(_gpgga.Parse(split)) error++;
-            
+            if(_gpgsa.Parse(split)) error++;
+
 
             return (error == 0);
         }
@@ -273,4 +274,104 @@ namespace NSConstellationGPS.GPS_Sentences
             return valid_data;
         }
     }
+
+
+    public class GPS_Sentence_GPGSA : GPS_Sentence_Base
+    {
+        // Mode1 (M = Manual, A = Automatic)
+        private char _mode1;
+        public char Mode1 { get { return _mode1; } set { _mode1 = value; OnPropertyChanged("Mode1"); } }
+
+        // Mode2 (1 = Fix unavailable, 2 = 2D, 3 = 3D)
+        private int _mode2;
+        public int Mode2 { get { return _mode2; } set { _mode2 = value; OnPropertyChanged("Mode2"); } }
+
+
+        private int[] _svIDs = new int[12];
+
+        // PRN of Satellite 0 used for fix
+        public int SVID0 { get { return _svIDs[0]; } set { _svIDs[0] = value; OnPropertyChanged("SVID0"); } }
+
+        // PRN of Satellite 1 used for fix
+        public int SVID1 { get { return _svIDs[1]; } set { _svIDs[1] = value; OnPropertyChanged("SVID1"); } }
+
+        // PRN of Satellite 2 used for fix
+        public int SVID2 { get { return _svIDs[2]; } set { _svIDs[2] = value; OnPropertyChanged("SVID2"); } }
+
+        // PRN of Satellite 3 used for fix
+        public int SVID3 { get { return _svIDs[3]; } set { _svIDs[3] = value; OnPropertyChanged("SVID3"); } }
+
+        // PRN of Satellite 4 used for fix
+        public int SVID4 { get { return _svIDs[4]; } set { _svIDs[4] = value; OnPropertyChanged("SVID4"); } }
+
+        // PRN of Satellite 5 used for fix
+        public int SVID5 { get { return _svIDs[5]; } set { _svIDs[5] = value; OnPropertyChanged("SVID5"); } }
+
+        // PRN of Satellite 6 used for fix
+        public int SVID6 { get { return _svIDs[6]; } set { _svIDs[6] = value; OnPropertyChanged("SVID6"); } }
+
+        // PRN of Satellite 7 used for fix
+        public int SVID7 { get { return _svIDs[7]; } set { _svIDs[7] = value; OnPropertyChanged("SVID7"); } }
+
+        // PRN of Satellite 8 used for fix
+        public int SVID8 { get { return _svIDs[8]; } set { _svIDs[8] = value; OnPropertyChanged("SVID8"); } }
+
+        // PRN of Satellite 9 used for fix
+        public int SVID9 { get { return _svIDs[9]; } set { _svIDs[9] = value; OnPropertyChanged("SVID9"); } }
+
+        // PRN of Satellite 10 used for fix
+        public int SVID10 { get { return _svIDs[10]; } set { _svIDs[10] = value; OnPropertyChanged("SVID10"); } }
+
+        // PRN of Satellite 11 used for fix
+        public int SVID11 { get { return _svIDs[11]; } set { _svIDs[11] = value; OnPropertyChanged("SVID11"); } }
+
+        // Dilution of Precision
+        private double _pDOP;
+        public double PDOP { get { return _pDOP; } set { _pDOP = value; OnPropertyChanged("PDOP"); } }
+
+        // Horizontal Dilution of Precision
+        private double _hDOP;
+        public double HDOP { get { return _hDOP; } set { _hDOP = value; OnPropertyChanged("HDOP"); } }
+
+        // Vertical Dilution of Prevision
+        private double _vDOP;
+        public double VDOP { get { return _vDOP; } set { _vDOP = value; OnPropertyChanged("VDOP"); } }
+
+        public override bool Parse(string[] buffer)
+        {
+            bool valid_data = false;
+
+            for (int i = 0; i < buffer.Length - 16; i++)
+            {
+                if (String.Compare(buffer[i], "$GPGSA") == 0)
+                {
+                    Type = "$GPGSA";
+                    Mode1 = String_to_Char(buffer[i + 1]);
+                    Mode2 = String_to_Int(buffer[i + 2]);
+
+                    SVID0 = String_to_Int(buffer[i + 3]);
+                    SVID1 = String_to_Int(buffer[i + 4]);
+                    SVID2 = String_to_Int(buffer[i + 5]);
+                    SVID3 = String_to_Int(buffer[i + 6]);
+                    SVID4 = String_to_Int(buffer[i + 7]);
+                    SVID5 = String_to_Int(buffer[i + 8]);
+                    SVID6 = String_to_Int(buffer[i + 9]);
+                    SVID7 = String_to_Int(buffer[i + 10]);
+                    SVID8 = String_to_Int(buffer[i + 11]);
+                    SVID9 = String_to_Int(buffer[i + 12]);
+                    SVID10 = String_to_Int(buffer[i + 13]);
+                    SVID11 = String_to_Int(buffer[i + 14]);
+
+
+                    PDOP = String_to_Double(buffer[i + 15]);
+                    HDOP = String_to_Double(buffer[i + 16]);
+                    VDOP = String_to_Double(buffer[i + 17]);
+
+                    valid_data = true;
+                }
+            }
+            return valid_data;
+        }
+    }
+
 }

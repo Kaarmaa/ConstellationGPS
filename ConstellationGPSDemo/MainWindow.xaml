@@ -7,20 +7,44 @@
         mc:Ignorable="d"
         Title="Constellation GPS Demo" Height="500" Width="700" Closing="Window_Closing">
     <Grid>
-        <ComboBox x:Name="cb_Port" HorizontalAlignment="Left" Margin="53,10,0,0" VerticalAlignment="Top" Width="75"/>
-        <ComboBox x:Name="cb_Baud" HorizontalAlignment="Left" Margin="53,37,0,0" VerticalAlignment="Top" Width="75"/>
-        <Label x:Name="label" Content="Port:" Padding="2" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="38" Height="22"/>
-        <Label x:Name="label_Copy" Content="Baud:" Padding="2" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="38" Height="22"/>
-        <TextBlock x:Name="tb_OutputWindow" Margin="457,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Background="Beige" Height="49"/>
-        <DataGrid x:Name="dataGrid" Margin="10,64,10,10"/>
-        <Button x:Name="btn_Open" Content="Open" HorizontalAlignment="Left" Margin="133,10,0,0" VerticalAlignment="Top" Width="75" Height="22" Click="btn_Open_Click" />
-        <Button x:Name="btn_Close" Content="Close" HorizontalAlignment="Left" Margin="133,37,0,0" VerticalAlignment="Top" Width="75" Height="22" Click="btn_Close_Click"/>
-        <RadioButton x:Name="rb_GPRMC" Content="$GPRMC" HorizontalAlignment="Left" Margin="213,7,0,0" VerticalAlignment="Top" Checked="rb_GPRMC_Checked" IsChecked="True"/>
-        <RadioButton x:Name="rb_GPGGA" Content="$GPGGA" HorizontalAlignment="Left" Margin="213,27,0,0" VerticalAlignment="Top" Checked="rb_GPGGA_Checked"/>
-        <RadioButton x:Name="radioButton_Copy1" Content="TBD" HorizontalAlignment="Left" Margin="213,47,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-        <RadioButton x:Name="radioButton_Copy2" Content="TBD" HorizontalAlignment="Left" Margin="311,7,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-        <RadioButton x:Name="radioButton_Copy3" Content="TBD" HorizontalAlignment="Left" Margin="311,27,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-        <RadioButton x:Name="radioButton_Copy4" Content="TBD" HorizontalAlignment="Left" Margin="311,47,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5"/>
+        </Grid.RowDefinitions>
+        <ComboBox x:Name="cb_Port" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" Margin="5"/>
+        <ComboBox x:Name="cb_Baud" Grid.Column="2" Grid.Row="3" Grid.RowSpan="3" Margin="5"/>
+        <Label x:Name="label" Content="Port:" VerticalContentAlignment="Center" Padding="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"/>
+        <Label x:Name="label_Copy" Content="Baud:" VerticalContentAlignment="Center" Padding="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.Row="3" Grid.RowSpan="3"/>
+        <TextBox x:Name="tb_OutputWindow"  TextWrapping="Wrap" Background="Azure" Grid.Column="6" Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="6" VerticalScrollBarVisibility="Auto"/>
+        <DataGrid x:Name="dataGrid" ColumnWidth="*" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="9"/>
+        <Button x:Name="btn_Start" Content="Start" Click="btn_Start_Click" Grid.Column="3" Grid.Row="0"  Margin="5" Grid.RowSpan="3"/>
+        <Button x:Name="btn_Stop" Content="Stop" Click="btn_Stop_Click" Grid.Column="3" Grid.Row="3" Grid.RowSpan="3" Margin="5"/>
+        <RadioButton x:Name="rb_GPRMC" Content="$GPRMC" Checked="rb_GPRMC_Checked" VerticalContentAlignment="Center" IsChecked="True" Grid.Column="4" Grid.Row="0" Grid.RowSpan="2"/>
+        <RadioButton x:Name="rb_GPGGA" Content="$GPGGA" Checked="rb_GPGGA_Checked" VerticalContentAlignment="Center" Grid.Column="4" Grid.Row="2" Grid.RowSpan="2"/>
+        <RadioButton x:Name="rb_GPGSA" Content="$GPGSA" Checked="rb_GPGSA_Checked" VerticalContentAlignment="Center" Grid.Column="4" Grid.Row="4" Grid.RowSpan="2"/>
+        <RadioButton x:Name="radioButton_Copy2" Content="TBD" VerticalContentAlignment="Center" IsEnabled="False" Grid.Column="5" Grid.Row="0" Grid.RowSpan="2"/>
+        <RadioButton x:Name="radioButton_Copy3" Content="TBD" VerticalContentAlignment="Center" IsEnabled="False" Grid.Column="5" Grid.Row="2" Grid.RowSpan="2"/>
+        <RadioButton x:Name="radioButton_Copy4" Content="TBD" VerticalContentAlignment="Center" IsEnabled="False" Grid.Column="5" Grid.Row="4" Grid.RowSpan="2"/>
 
     </Grid>
 </Window>

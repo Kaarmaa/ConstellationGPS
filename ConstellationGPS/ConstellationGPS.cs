@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO.Ports;
+
 using NSConstellationGPS.GPS_Sentences;
 
 namespace NSConstellationGPS
@@ -11,7 +8,7 @@ namespace NSConstellationGPS
     /// <summary>
     /// Error codes possible from various functions
     /// </summary>
-    enum ErrorCode
+    public enum ErrorCode
     {
         None = 0,
         Timeout = -1,
@@ -25,7 +22,7 @@ namespace NSConstellationGPS
     public class ConstellationGPS
     {
         // master is the class that holds all of the NMEA sentence data
-        GPS_Sentence_Master master = new GPS_Sentence_Master();
+        private GPS_Sentence_Master master = new GPS_Sentence_Master();
 
         // Const Vars
         private const int BUFFER_LENGTH = 10000; // Bytes
@@ -125,7 +122,7 @@ namespace NSConstellationGPS
         /// Main function to retrieve serial GPS data stream
         /// </summary>
         /// <returns></returns>
-        public int ReadGPS()
+        public ErrorCode Update()
         {
             try
             {
@@ -133,15 +130,13 @@ namespace NSConstellationGPS
                 _bytes_read = _gps_comm.Read(_gps_stream, 0, _bytes_to_read);
 
             }
-            catch (TimeoutException tex)
+            catch (TimeoutException)
             {
-                ErrorCatch(tex);
-                return (int)ErrorCode.Timeout;
+                return ErrorCode.Timeout;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                ErrorCatch(ex);
-                return (int)ErrorCode.Undefined;
+                return ErrorCode.Undefined;
             }
 
             // Add Data read from stream to our local buffer
@@ -152,7 +147,7 @@ namespace NSConstellationGPS
 
             // If no sentence headers exist, nothing to do
             if(last_index < 0)
-                return (int)ErrorCode.NoData;
+                return ErrorCode.NoData;
 
             // Split the stream for easier parsing
             _split_stream = _buffer.Substring(0, last_index).Split(_delimiters, StringSplitOptions.None);
@@ -167,7 +162,7 @@ namespace NSConstellationGPS
             master.Parse(_split_stream);
 
             // Return no error
-            return (int)ErrorCode.None;
+            return ErrorCode.None;
         }
 
         /// <summary>
@@ -225,6 +220,33 @@ namespace NSConstellationGPS
             tmp.Satellite_Count = master.GPGGA.Satellite_Count;
             tmp.Time = master.GPGGA.Time;
             tmp.Type = master.GPGGA.Type;
+
+            return tmp;
+        }
+
+        public GPS_Sentence_GPGSA getGPGSA()
+        {
+            GPS_Sentence_GPGSA tmp = new GPS_Sentence_GPGSA();
+
+            tmp.HDOP    = master.GPGSA.HDOP;
+            tmp.Mode1   = master.GPGSA.Mode1;
+            tmp.Mode2   = master.GPGSA.Mode2;
+            tmp.PDOP    = master.GPGSA.PDOP;
+            tmp.Type    = master.GPGSA.Type;
+            tmp.VDOP    = master.GPGSA.VDOP;
+
+            tmp.SVID0 = master.GPGSA.SVID0;
+            tmp.SVID1 = master.GPGSA.SVID1;
+            tmp.SVID2 = master.GPGSA.SVID2;
+            tmp.SVID3 = master.GPGSA.SVID3;
+            tmp.SVID4 = master.GPGSA.SVID4;
+            tmp.SVID5 = master.GPGSA.SVID5;
+            tmp.SVID6 = master.GPGSA.SVID6;
+            tmp.SVID7 = master.GPGSA.SVID7;
+            tmp.SVID8 = master.GPGSA.SVID8;
+            tmp.SVID9 = master.GPGSA.SVID9;
+            tmp.SVID10 = master.GPGSA.SVID10;
+            tmp.SVID11 = master.GPGSA.SVID11;
 
             return tmp;
         }
