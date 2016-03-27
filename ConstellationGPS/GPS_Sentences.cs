@@ -532,7 +532,7 @@ namespace NSConstellationGPS.GPS_Sentences
                     for (int locind = 0; locind < 4; locind++)
                     {
                         int current_index = ((Current_Message - 1) * 4) + locind;
-                        if (current_index > Total_SV)
+                        if (current_index < Total_SV)
                             break;
 
                         int local_offset = (locind + 1) * 4;
