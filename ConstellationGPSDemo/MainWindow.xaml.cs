@@ -27,7 +27,11 @@ namespace NSConstellationGPSDemo
         private ObservableCollection<GPS_Sentence_GPRMC> Collection_GPRMC = new ObservableCollection<GPS_Sentence_GPRMC>();
         private ObservableCollection<GPS_Sentence_GPGGA> Collection_GPGGA = new ObservableCollection<GPS_Sentence_GPGGA>();
         private ObservableCollection<GPS_Sentence_GPGSA> Collection_GPGSA = new ObservableCollection<GPS_Sentence_GPGSA>();
+        private ObservableCollection<GPS_Sentence_GPGSV> Collection_GPGSV = new ObservableCollection<GPS_Sentence_GPGSV>();
 
+        /// <summary>
+        /// Demo Window Contructor
+        /// </summary>
         public ConstellationGPSDemoWindow()
         {
             InitializeComponent();
@@ -42,6 +46,11 @@ namespace NSConstellationGPSDemo
             timer.Tick += new EventHandler(timer_tick);
         }
 
+        /// <summary>
+        /// Main UI timer
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="sender"></param>
         private void timer_tick(object obj, EventArgs sender)
         {
             ErrorCode ret = GPS.Update();
@@ -53,9 +62,10 @@ namespace NSConstellationGPSDemo
                 Collection_GPRMC.Add(GPS.getGPRMC());
                 Collection_GPGGA.Add(GPS.getGPGGA());
                 Collection_GPGSA.Add(GPS.getGPGSA());
+                Collection_GPGSV.Add(GPS.getGPGSV());
 
                 // UI Scroll to most recent item
-                if(dataGrid.ItemsSource != null)
+                if (dataGrid.ItemsSource != null)
                     dataGrid.ScrollIntoView(dataGrid.Items[dataGrid.Items.Count - 1]);
 
 
@@ -124,6 +134,10 @@ namespace NSConstellationGPSDemo
             Write_to_OutputWindow("...Processing Halted\n");
         }
 
+        /// <summary>
+        /// Catch for exceptions
+        /// </summary>
+        /// <param name="ex"></param>
         private void ErrorCatch(Exception ex)
         {
 #if DEBUG
@@ -136,6 +150,10 @@ namespace NSConstellationGPSDemo
 #endif
         }
 
+        /// <summary>
+        /// Catch for modules ErrorCode objects
+        /// </summary>
+        /// <param name="ec"></param>
         private void ErrorCatch(ErrorCode ec)
         {
             switch (ec)
@@ -159,7 +177,11 @@ namespace NSConstellationGPSDemo
             
         }
 
-
+        /// <summary>
+        /// Event fires when main window is closing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             timer.Stop();
@@ -168,12 +190,21 @@ namespace NSConstellationGPSDemo
                 GPS.Close();
         }
 
+        /// <summary>
+        /// Writes arguement to the OutputWindow
+        /// </summary>
+        /// <param name="s"></param>
         private void Write_to_OutputWindow(string s)
         {
             tb_OutputWindow.Text += s;
             tb_OutputWindow.ScrollToEnd();
         }
 
+        /// <summary>
+        /// Event that fires when the combobox specify which message to display is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cb_available_msgs_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             switch (cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString())
@@ -188,10 +219,10 @@ namespace NSConstellationGPSDemo
                     dataGrid.ItemsSource = Collection_GPGSA;
                     break;
                 case "$GPGSV":
-                    dataGrid.ItemsSource = null;
-                    Write_to_OutputWindow("$GPGSV Parsing unavailable.\n");
+                    dataGrid.ItemsSource = Collection_GPGSV;
                     break;
                 default:
+                    Write_to_OutputWindow(cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString() + " Parsing unavailable.\n");
                     dataGrid.ItemsSource = null;
                     break;
             }

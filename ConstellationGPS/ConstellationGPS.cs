@@ -22,10 +22,10 @@ namespace NSConstellationGPS
     /// </summary>
     public class ConstellationGPS
     {
-        // master is the class that holds all of the NMEA sentence data
-        private GPS_Sentence_Master master = new GPS_Sentence_Master();
+        // Master is the class that holds all of the NMEA sentence data
+        private GPS_Sentence_Master Master = new GPS_Sentence_Master();
 
-        // Const Vars
+        // Private Const Vars
         private const int BUFFER_LENGTH = 10000; // Bytes
         private readonly string[] _delimiters = { ",", "\r\n", "*" };
 
@@ -45,7 +45,7 @@ namespace NSConstellationGPS
         /// <param name="port">The COM post for the GPS unit. Ex: COM6 </param>
         /// <param name="baud">Baud rate in kbps for port</param>
         /// <param name="timeout">"Timeout param for how frequently to check the buffer"</param>
-        public ConstellationGPS(string port, int baud, int timeout = 100)
+        public ConstellationGPS(string port, int baud, int timeout = 1000)
         {
             _gps_stream = new char[BUFFER_LENGTH];
             Array.Clear(_gps_stream, 0, BUFFER_LENGTH);
@@ -83,7 +83,6 @@ namespace NSConstellationGPS
                 }
                 catch (Exception ex)
                 {
-                    ErrorCatch(ex);
                     return false;
                 }
 
@@ -109,7 +108,6 @@ namespace NSConstellationGPS
                 }
                 catch (Exception ex)
                 {
-                    ErrorCatch(ex);
                     return false;
                 }
 
@@ -159,8 +157,8 @@ namespace NSConstellationGPS
              */
             _buffer = _buffer.Substring(last_index);
 
-            // Call the master struct to parse the given buffer and populate its children.
-            master.Parse(_split_stream);
+            // Call the Master struct to parse the given buffer and populate its children.
+            Master.Parse(_split_stream);
 
             // Return no error
             return ErrorCode.None;
@@ -176,105 +174,134 @@ namespace NSConstellationGPS
             return version.Version;
         }
 
+        /// <summary>
+        /// Function returns all available GPS headers that have ceom from the sensor
+        /// </summary>
+        /// <returns></returns>
         public ObservableCollection<string> getAvailableMessages()
         {
-            return master.getAvailableMessages();
+            return Master.getAvailableMessages();
         }
 
         /// <summary>
-        /// Gets a copy of the newest master.GPRMC sentence and returns it to caller 
+        /// Gets a copy of the newest Master.GPRMC sentence and returns it to caller 
         /// </summary>
         /// <returns></returns>
         public GPS_Sentence_GPRMC getGPRMC()
         {
             GPS_Sentence_GPRMC tmp = new GPS_Sentence_GPRMC();
 
-            tmp.Checksum = master.GPRMC.Checksum;
-            tmp.Course = master.GPRMC.Course;
-            tmp.Date = master.GPRMC.Date;
-            tmp.Fix = master.GPRMC.Fix;
-            tmp.Latitude = master.GPRMC.Latitude;
-            tmp.Longitude = master.GPRMC.Longitude;
-            tmp.Magnetic = master.GPRMC.Magnetic;
-            tmp.Speed = master.GPRMC.Speed;
-            tmp.Status = master.GPRMC.Status;
-            tmp.Time = master.GPRMC.Time;
-            tmp.Type = master.GPRMC.Type;
+            tmp.Checksum = Master.GPRMC.Checksum;
+            tmp.Course = Master.GPRMC.Course;
+            tmp.Date = Master.GPRMC.Date;
+            tmp.Fix = Master.GPRMC.Fix;
+            tmp.Latitude = Master.GPRMC.Latitude;
+            tmp.Longitude = Master.GPRMC.Longitude;
+            tmp.Magnetic = Master.GPRMC.Magnetic;
+            tmp.Speed = Master.GPRMC.Speed;
+            tmp.Status = Master.GPRMC.Status;
+            tmp.Time = Master.GPRMC.Time;
+            tmp.Type = Master.GPRMC.Type;
             
             return tmp;
         }
 
         /// <summary>
-        /// Gets a copy of the newest master.GPGGA sentence and returns it to caller 
+        /// Gets a copy of the newest Master.GPGGA sentence and returns it to caller 
         /// </summary>
         /// <returns></returns>
         public GPS_Sentence_GPGGA getGPGGA()
         {
             GPS_Sentence_GPGGA tmp = new GPS_Sentence_GPGGA();
 
-            tmp.Age_From_Last_Update_s = master.GPGGA.Age_From_Last_Update_s;
-            tmp.Altitude = master.GPGGA.Altitude;
-            tmp.Altitude_Unit = master.GPGGA.Altitude_Unit;
-            tmp.Checksum = master.GPGGA.Checksum;
-            tmp.Diff_Reference_Station_ID = master.GPGGA.Diff_Reference_Station_ID;
-            tmp.Geoidal_Separation = master.GPGGA.Geoidal_Separation;
-            tmp.Geoidal_Separation_Unit = master.GPGGA.Geoidal_Separation_Unit;
-            tmp.Horizontal_Dilution = master.GPGGA.Horizontal_Dilution;
-            tmp.Latitude = master.GPGGA.Latitude;
-            tmp.Longitude = master.GPGGA.Longitude;
-            tmp.Quality = master.GPGGA.Quality;
-            tmp.Satellite_Count = master.GPGGA.Satellite_Count;
-            tmp.Time = master.GPGGA.Time;
-            tmp.Type = master.GPGGA.Type;
+            tmp.Age_From_Last_Update_s = Master.GPGGA.Age_From_Last_Update_s;
+            tmp.Altitude = Master.GPGGA.Altitude;
+            tmp.Altitude_Unit = Master.GPGGA.Altitude_Unit;
+            tmp.Checksum = Master.GPGGA.Checksum;
+            tmp.Diff_Reference_Station_ID = Master.GPGGA.Diff_Reference_Station_ID;
+            tmp.Geoidal_Separation = Master.GPGGA.Geoidal_Separation;
+            tmp.Geoidal_Separation_Unit = Master.GPGGA.Geoidal_Separation_Unit;
+            tmp.Horizontal_Dilution = Master.GPGGA.Horizontal_Dilution;
+            tmp.Latitude = Master.GPGGA.Latitude;
+            tmp.Longitude = Master.GPGGA.Longitude;
+            tmp.Quality = Master.GPGGA.Quality;
+            tmp.Satellite_Count = Master.GPGGA.Satellite_Count;
+            tmp.Time = Master.GPGGA.Time;
+            tmp.Type = Master.GPGGA.Type;
 
             return tmp;
         }
         
         /// <summary>
-        /// Gets a copy of the newest master.GPGSA sentence and returns it to caller 
+        /// Gets a copy of the newest Master.GPGSA sentence and returns it to caller 
         /// </summary>
         /// <returns></returns>
         public GPS_Sentence_GPGSA getGPGSA()
         {
             GPS_Sentence_GPGSA tmp = new GPS_Sentence_GPGSA();
 
-            tmp.HDOP    = master.GPGSA.HDOP;
-            tmp.Mode1   = master.GPGSA.Mode1;
-            tmp.Mode2   = master.GPGSA.Mode2;
-            tmp.PDOP    = master.GPGSA.PDOP;
-            tmp.Type    = master.GPGSA.Type;
-            tmp.VDOP    = master.GPGSA.VDOP;
+            tmp.HDOP    = Master.GPGSA.HDOP;
+            tmp.Mode1   = Master.GPGSA.Mode1;
+            tmp.Mode2   = Master.GPGSA.Mode2;
+            tmp.PDOP    = Master.GPGSA.PDOP;
+            tmp.Type    = Master.GPGSA.Type;
+            tmp.VDOP    = Master.GPGSA.VDOP;
 
-            tmp.SVID0 = master.GPGSA.SVID0;
-            tmp.SVID1 = master.GPGSA.SVID1;
-            tmp.SVID2 = master.GPGSA.SVID2;
-            tmp.SVID3 = master.GPGSA.SVID3;
-            tmp.SVID4 = master.GPGSA.SVID4;
-            tmp.SVID5 = master.GPGSA.SVID5;
-            tmp.SVID6 = master.GPGSA.SVID6;
-            tmp.SVID7 = master.GPGSA.SVID7;
-            tmp.SVID8 = master.GPGSA.SVID8;
-            tmp.SVID9 = master.GPGSA.SVID9;
-            tmp.SVID10 = master.GPGSA.SVID10;
-            tmp.SVID11 = master.GPGSA.SVID11;
+            tmp.SVID0 = Master.GPGSA.SVID0;
+            tmp.SVID1 = Master.GPGSA.SVID1;
+            tmp.SVID2 = Master.GPGSA.SVID2;
+            tmp.SVID3 = Master.GPGSA.SVID3;
+            tmp.SVID4 = Master.GPGSA.SVID4;
+            tmp.SVID5 = Master.GPGSA.SVID5;
+            tmp.SVID6 = Master.GPGSA.SVID6;
+            tmp.SVID7 = Master.GPGSA.SVID7;
+            tmp.SVID8 = Master.GPGSA.SVID8;
+            tmp.SVID9 = Master.GPGSA.SVID9;
+            tmp.SVID10 = Master.GPGSA.SVID10;
+            tmp.SVID11 = Master.GPGSA.SVID11;
 
             return tmp;
         }
 
         /// <summary>
-        /// Custom Error catching function
+        /// Gets a copy of the newest Master.GPGSV sentence and returns it to caller 
         /// </summary>
-        /// <param name="ex"></param>
-        private void ErrorCatch(Exception ex)
+        /// <returns></returns>
+        public GPS_Sentence_GPGSV getGPGSV()
         {
-#if DEBUG
-            // Debug Mode Error Handling
-            // Append message to error window for testing
-            //tb_OutputWindow.Text += "\n" + ex.Message;
-#else
-            // Release Mode Error Handling
-            // TBD
-#endif
+            GPS_Sentence_GPGSV tmp = new GPS_Sentence_GPGSV();
+
+            //tmp.Azimuth0 = Master.GPGSV.Azimuth0;
+            //tmp.Azimuth1 = Master.GPGSV.Azimuth1;
+            //tmp.Azimuth2 = Master.GPGSV.Azimuth2;
+            //tmp.Azimuth3 = Master.GPGSV.Azimuth3;
+
+            //tmp.Elevation0 = Master.GPGSV.Elevation0;
+            //tmp.Elevation1 = Master.GPGSV.Elevation1;
+            //tmp.Elevation2 = Master.GPGSV.Elevation2;
+            //tmp.Elevation3 = Master.GPGSV.Elevation3;
+
+            //tmp.PRN0 = Master.GPGSV.PRN0;
+            //tmp.PRN1 = Master.GPGSV.PRN1;
+            //tmp.PRN2 = Master.GPGSV.PRN2;
+            //tmp.PRN3 = Master.GPGSV.PRN3;
+
+            //tmp.SNR0 = Master.GPGSV.SNR0;
+            //tmp.SNR1 = Master.GPGSV.SNR1;
+            //tmp.SNR2 = Master.GPGSV.SNR2;
+            //tmp.SNR3 = Master.GPGSV.SNR3;
+
+            for (int i = 0; i < Master.GPGSV.SVS.Length; i++)
+            {
+                tmp.SVS[i] = Master.GPGSV.SVS[i];
+            }
+
+            tmp.Checksum = Master.GPGSV.Checksum;
+            tmp.Total_Messages = Master.GPGSV.Total_Messages;
+            tmp.Total_SV = Master.GPGSV.Total_SV;
+            tmp.Type = Master.GPGSV.Type;
+
+            return tmp;
         }
     }
 }

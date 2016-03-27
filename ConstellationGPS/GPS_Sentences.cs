@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace NSConstellationGPS.GPS_Sentences
 {
     /// <summary>
-    /// This is the master class that holds all of the possible GPS sentences that are coming from the GPS
+    /// This is the Master class that holds all of the possible GPS sentences that are coming from the GPS
     /// </summary>
     class GPS_Sentence_Master : INotifyPropertyChanged
     {
@@ -17,7 +18,10 @@ namespace NSConstellationGPS.GPS_Sentences
 
         private GPS_Sentence_GPGSA _gpgsa;
         public GPS_Sentence_GPGSA GPGSA { get { return _gpgsa; } set { _gpgsa = value; OnPropertyChanged("GPGSA"); } }
-        
+
+        private GPS_Sentence_GPGSV _gpgsv;
+        public GPS_Sentence_GPGSV GPGSV { get { return _gpgsv; } set { _gpgsv = value; OnPropertyChanged("GPGSV"); } }
+
         private ObservableCollection<string> avMsgs = new ObservableCollection<string>();
 
         [field: NonSerialized]
@@ -31,6 +35,9 @@ namespace NSConstellationGPS.GPS_Sentences
             }
         }
 
+        /// <summary>
+        /// Master GPS Constructor
+        /// </summary>
         public GPS_Sentence_Master()
         {
             avMsgs.Clear();
@@ -38,10 +45,17 @@ namespace NSConstellationGPS.GPS_Sentences
             _gprmc = new GPS_Sentence_GPRMC();
             _gpgga = new GPS_Sentence_GPGGA();
             _gpgsa = new GPS_Sentence_GPGSA();
+            _gpgsv = new GPS_Sentence_GPGSV();
         }
 
+        /// <summary>
+        /// Main event to have master GPS sentence begin parsing
+        /// </summary>
+        /// <param name="split"></param>
+        /// <returns></returns>
         public bool Parse(string[] split)
         {
+            // Check for any new sentences that are not already known
             foreach(string s in split)
             {
                 if (s.Length > 0 && s[0] == '$' && !avMsgs.Contains(s))
@@ -49,16 +63,25 @@ namespace NSConstellationGPS.GPS_Sentences
                     avMsgs.Add(s);
                 }
             }
-                
+            
             int error = 0;
-            if(_gprmc.Parse(split)) error++;
+
+            //Individual Sentence Parsing Calls 
+            if (_gprmc.Parse(split)) error++;
             if(_gpgga.Parse(split)) error++;
             if(_gpgsa.Parse(split)) error++;
+            if(_gpgsv.Parse(split)) error++;
 
 
+            //TODO: Can check here if error > 0, and throw a better error than a FAIL.
+            // Return success
             return (error == 0);
         }
 
+        /// <summary>
+        /// Returns a collection of available GPS messages from this sensor
+        /// </summary>
+        /// <returns></returns>
         public ObservableCollection<string> getAvailableMessages()
         {
             return avMsgs;
@@ -83,9 +106,19 @@ namespace NSConstellationGPS.GPS_Sentences
                 handler(this, new PropertyChangedEventArgs(name));
             }
         }
-
+        
+        /// <summary>
+        /// Holds parsing code for individual sentence types
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public abstract bool Parse(string[] s);
 
+        /// <summary>
+        /// Converts string to double, with error checking for null strings
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public double String_to_Double(string s)
         {
             if (s.CompareTo("") != 0)
@@ -95,6 +128,11 @@ namespace NSConstellationGPS.GPS_Sentences
             return -0;
         }
 
+        /// <summary>
+        /// Converts string to int, with error checking for null strings
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public int String_to_Int(string s)
         {
             if (s.CompareTo("") != 0)
@@ -104,6 +142,11 @@ namespace NSConstellationGPS.GPS_Sentences
             return -0;
         }
 
+        /// <summary>
+        /// Converts string to char, with error checking for null strings
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public char String_to_Char(string s)
         {
             if (s.CompareTo("") != 0)
@@ -119,41 +162,58 @@ namespace NSConstellationGPS.GPS_Sentences
     /// </summary>
     public class GPS_Sentence_GPRMC : GPS_Sentence_Base
     {
+        // UTC Time of position fix
         private string _time;
         public string Time { get { return _time; } set { _time = value;  OnPropertyChanged("Time"); } }
 
+        // Data Status/Validity (A = ok, V = invalid)
         private char _status;
         public char Status { get { return _status; } set { _status = value; OnPropertyChanged("Status"); } }
 
+        // Latitude of fix (Decimal Degrees)
         private double _latitude;
         public double Latitude { get { return _latitude; } set { _latitude = value; OnPropertyChanged("Latitude"); } }
 
+        // Longitude of fix (Decimal Degrees)
         private double _longitude;
         public double Longitude { get { return _longitude; } set { _longitude = value; OnPropertyChanged("Longitude"); } }
-
+        
+        // Speed (Knots)
         private double _speed;
         public double Speed { get { return _speed; } set { _speed = value; OnPropertyChanged("Speed"); } }
 
+        // Course (Degrees)
         private double _course;
         public double Course { get { return _course; } set { _course = value; OnPropertyChanged("Course"); } }
 
+        // Date (UT)
         private int _date;
         public int Date { get { return _date; } set { _date = value; OnPropertyChanged("Date"); } }
 
+        // Magnetic Variation (Degrees)
+        //TODO: GPRMC:Magnetic - Not currently populated
         private double _magnetic;
         public double Magnetic { get { return _magnetic; } set { _magnetic = value; OnPropertyChanged("Magnetic"); } }
 
+        // Fix (A = Autonomous, D = Differential, E = Estimated, N = Not Valid, S = Simulator)
         private char _fix;
         public char Fix { get { return _fix; } set { _fix = value; OnPropertyChanged("Fix"); } }
 
+        // Checksum
         private string _checksum;
         public string Checksum { get { return _checksum; } set { _checksum = value; OnPropertyChanged("Checksum"); } }
 
+        /// <summary>
+        /// Parsing Function
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
         public override bool Parse(string[] buffer)
         {
             bool valid_data = false;
             double buf, degrees, minutes;
-
+            
+            // TODO: Use Master's precalculated indicides to know where to parse. No search will be neceessary anymore.
             for (int i = 0; i < buffer.Length - 14; i++)
             {
                 if(String.Compare(buffer[i],"$GPRMC") == 0)
@@ -248,11 +308,17 @@ namespace NSConstellationGPS.GPS_Sentences
         private string _checksum;
         public string Checksum { get { return _checksum; } set { _checksum = value; OnPropertyChanged("Checksum"); } }
         
+        /// <summary>
+        /// Parsing Function
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
         public override bool Parse(string[] buffer)
         {
             bool valid_data = false;
             double buf, degrees, minutes;
 
+            // TODO: Use Master's precalculated indicides to know where to parse. No search will be neceessary anymore.
             for (int i = 0; i < buffer.Length - 16; i++)
             {
                 if (String.Compare(buffer[i], "$GPGGA") == 0)
@@ -304,8 +370,7 @@ namespace NSConstellationGPS.GPS_Sentences
         // Mode2 (1 = Fix unavailable, 2 = 2D, 3 = 3D)
         private int _mode2;
         public int Mode2 { get { return _mode2; } set { _mode2 = value; OnPropertyChanged("Mode2"); } }
-
-
+        
         private int[] _svIDs = new int[12];
 
         // PRN of Satellite 0 used for fix
@@ -356,10 +421,16 @@ namespace NSConstellationGPS.GPS_Sentences
         private double _vDOP;
         public double VDOP { get { return _vDOP; } set { _vDOP = value; OnPropertyChanged("VDOP"); } }
 
+        /// <summary>
+        /// Parsing Function
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
         public override bool Parse(string[] buffer)
         {
             bool valid_data = false;
 
+            // TODO: Use Master's precalculated indicides to know where to parse. No search will be neceessary anymore.
             for (int i = 0; i < buffer.Length - 16; i++)
             {
                 if (String.Compare(buffer[i], "$GPGSA") == 0)
@@ -393,4 +464,90 @@ namespace NSConstellationGPS.GPS_Sentences
         }
     }
 
+    /// <summary>
+    /// GPGSV Sentence Structure
+    /// </summary>
+    public class GPS_Sentence_GPGSV : GPS_Sentence_Base
+    {
+        // NOTE: Message Sub-ID (ex: 1/3) is ignored in this implementation because the multiple sentences are fused into this one message on parse
+
+        // Total number of messages in this block
+        private int _total_Messages;
+        public int Total_Messages { get { return _total_Messages; } set { _total_Messages = value; OnPropertyChanged("Total_Messages"); } }
+        
+        // Total number of satellites in view
+        private int _total_SV;
+        public int Total_SV { get { return _total_SV; } set { _total_SV = value; OnPropertyChanged("Total_SV"); } }
+
+        //TODO: Make the SVS array bindable to the Demo UI
+        public SV[] _svs = new SV[12];
+        public SV[] SVS { get { return _svs; } set { _svs = value; OnPropertyChanged("SVS"); } }
+
+        public struct SV
+        { 
+            // SV PRN Number 
+            public int PRN { get; set; }
+
+            // Elevation (degrees, 9 max)
+            public int Elevation { get; set; }
+
+            // Azimuth (degrees from true N, -359)
+            public int Azimuth { get; set; }
+
+            // SNR (dB, -99, null with no tracking)
+            public int SNR { get; set; }
+        }
+
+        // Checksum
+        private string _checksum;
+        public string Checksum { get { return _checksum; } set { _checksum = value; OnPropertyChanged("Checksum"); } }
+
+        /// <summary>
+        /// Parsing Function
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public override bool Parse(string[] buffer)
+        {
+            bool valid_data = false;
+
+            // TODO: Use Master's precalculated indicides to know where to parse. No search will be neceessary anymore.
+            for (int i = 0; i < buffer.Length - 20; i++)
+            {
+                if (String.Compare(buffer[i], "$GPGSV") == 0)
+                {
+                    Type = "$GPGSV";
+
+                    Total_Messages = String_to_Int(buffer[i + 1]);
+
+                    int Current_Message = String_to_Int(buffer[i + 2]);
+
+                    Total_SV = String_to_Int(buffer[i + 3]);
+
+                    int arr_size = Current_Message * 4;
+                    if (SVS.Length < arr_size)
+                        Array.Resize(ref _svs, arr_size);
+
+
+                    for (int locind = 0; locind < 4; locind++)
+                    {
+                        int current_index = ((Current_Message - 1) * 4) + locind;
+                        if (current_index > Total_SV)
+                            break;
+
+                        int local_offset = (locind + 1) * 4;
+                        SVS[current_index].PRN = String_to_Int(buffer[i + local_offset]);
+                        SVS[current_index].Elevation = String_to_Int(buffer[i + local_offset + 1]);
+                        SVS[current_index].Azimuth = String_to_Int(buffer[i + local_offset + 2]);
+                        SVS[current_index].SNR = String_to_Int(buffer[i + local_offset + 3]);
+                    }
+                    
+                    Checksum = "*" + buffer[i + 20];
+
+                    valid_data = true;
+                }
+            }
+            return valid_data;
+        }
+    }
 }
