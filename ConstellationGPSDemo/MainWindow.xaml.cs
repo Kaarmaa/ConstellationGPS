@@ -58,7 +58,7 @@ namespace NSConstellationGPSDemo
         /// <param name="sender"></param>
         private void timer_tick(object obj, EventArgs sender)
         {
-            ErrorCode ret = GPS.Update();
+            ErrorCode ret = GPS.getErrors();
 
             // Update GPS
             if (ret == ErrorCode.None)
@@ -74,9 +74,11 @@ namespace NSConstellationGPSDemo
                 if (dataGrid.ItemsSource != null)
                     dataGrid.ScrollIntoView(dataGrid.Items[dataGrid.Items.Count - 1]);
 
-
+                //string text = cb_available_msgs.Text;
+               // cb_available_msgs.ItemsSource = null;
                 cb_available_msgs.ItemsSource = GPS.getAvailableMessages();
-                cb_available_msgs.UpdateLayout();
+                //cb_available_msgs.Text = text;
+                //cb_available_msgs.UpdateLayout();
             }
             else
             {
@@ -216,27 +218,30 @@ namespace NSConstellationGPSDemo
         /// <param name="e"></param>
         private void cb_available_msgs_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            switch (cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString())
+            if (cb_available_msgs.SelectedIndex >= 0)
             {
-                case "$GPRMC":
-                    dataGrid.ItemsSource = Collection_GPRMC;
-                    break;
-                case "$GPGGA":
-                    dataGrid.ItemsSource = Collection_GPGGA;
-                    break;
-                case "$GPGSA":
-                    dataGrid.ItemsSource = Collection_GPGSA;
-                    break;
-                case "$GPGSV":
-                    dataGrid.ItemsSource = Collection_GPGSV;
-                    break;
-                case "$GPVTG":
-                    dataGrid.ItemsSource = Collection_GPVTG;
-                    break;
-                default:
-                    Write_to_OutputWindow(cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString() + " Parsing unavailable.\n");
-                    dataGrid.ItemsSource = null;
-                    break;
+                switch (cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString())
+                {
+                    case "$GPRMC":
+                        dataGrid.ItemsSource = Collection_GPRMC;
+                        break;
+                    case "$GPGGA":
+                        dataGrid.ItemsSource = Collection_GPGGA;
+                        break;
+                    case "$GPGSA":
+                        dataGrid.ItemsSource = Collection_GPGSA;
+                        break;
+                    case "$GPGSV":
+                        dataGrid.ItemsSource = Collection_GPGSV;
+                        break;
+                    case "$GPVTG":
+                        dataGrid.ItemsSource = Collection_GPVTG;
+                        break;
+                    default:
+                        Write_to_OutputWindow(cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString() + " Parsing unavailable.\n");
+                        dataGrid.ItemsSource = null;
+                        break;
+                }
             }
         }
     }

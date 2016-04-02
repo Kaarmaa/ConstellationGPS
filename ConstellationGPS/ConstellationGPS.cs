@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Ports;
-using System.Collections.ObjectModel;
+using System.Timers;
+using System.Collections.Generic;
 
 using NSConstellationGPS.GPS_Sentences;
 
@@ -37,6 +38,9 @@ namespace NSConstellationGPS
         private int _bytes_read;
         private string _buffer;
         private VersionControl version = new VersionControl();
+
+        private Timer _main_update;
+        private ErrorCode _error;
 
         // GPS Communication Configuration Parameters
         private string _port;
@@ -109,6 +113,8 @@ namespace NSConstellationGPS
                     // Open new port
                     _gps_comm.Open();
 
+                    _main_update.Start();
+
                 }
                 catch (Exception ex)
                 {
@@ -151,7 +157,34 @@ namespace NSConstellationGPS
         /// <param name="timeout_ms"></param>
         public void setTimeout(int timeout_ms)
         {
+            if(_main_update != null)
+            {
+                _main_update.Stop();
+            }
+
             _timeout = timeout_ms;
+
+            _main_update = new Timer(_timeout);
+            _main_update.Elapsed += MainUpdateTimerElapsed;
+        }
+
+        /// <summary>
+        /// Main event to update GPS outputs
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="sender"></param>
+        private void MainUpdateTimerElapsed(object obj, EventArgs sender)
+        {
+            _error = Update();
+        }
+
+        /// <summary>
+        /// Accessor function to get errors from external modules
+        /// </summary>
+        /// <returns></returns>
+        public ErrorCode getErrors()
+        {
+            return _error;
         }
 
         /// <summary>
@@ -167,6 +200,9 @@ namespace NSConstellationGPS
                 {
                     if (_gps_comm.IsOpen)
                         _gps_comm.Close();
+
+
+                    _main_update.Stop();
                 }
                 catch (Exception ex)
                 {
@@ -240,7 +276,7 @@ namespace NSConstellationGPS
         /// Function returns all available GPS headers that have ceom from the sensor
         /// </summary>
         /// <returns></returns>
-        public ObservableCollection<string> getAvailableMessages()
+        public List<string> getAvailableMessages()
         {
             return Master.getAvailableMessages();
         }

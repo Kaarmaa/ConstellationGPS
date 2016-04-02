@@ -24,8 +24,8 @@ namespace NSConstellationGPS.GPS_Sentences
 
         private GPS_Sentence_GPVTG _gpvtg;
         public GPS_Sentence_GPVTG GPVTG { get { return _gpvtg; } set { _gpvtg = value; OnPropertyChanged("GPVTG"); } }
-
-        private ObservableCollection<string> avMsgs = new ObservableCollection<string>();
+        
+        private List<string> avMsgs = new List<string>();
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
@@ -60,13 +60,14 @@ namespace NSConstellationGPS.GPS_Sentences
         public bool Parse(string[] split)
         {
             // Check for any new sentences that are not already known
-            foreach(string s in split)
+            foreach (string s in split)
             {
                 if (s.Length > 0 && s[0] == '$' && !avMsgs.Contains(s))
                 {
                     avMsgs.Add(s);
                 }
             }
+
             
             int error = 0;
 
@@ -87,7 +88,7 @@ namespace NSConstellationGPS.GPS_Sentences
         /// Returns a collection of available GPS messages from this sensor
         /// </summary>
         /// <returns></returns>
-        public ObservableCollection<string> getAvailableMessages()
+        public List<string> getAvailableMessages()
         {
             return avMsgs;
         }

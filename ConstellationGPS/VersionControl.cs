@@ -3,7 +3,7 @@
     // This is just used as a local version note item
     class VersionControl
     {
-        private string _version = "0.0.0.7";
+        private string _version = "0.1.0.0";
         public string Version { get { return _version; } set { } }
     }
 }
@@ -12,6 +12,10 @@
 /********************************************************************************************************/
 /* USER     | Date      |   Version |   Issue                                                           */
 /********************************************************************************************************/
+/* KKrupins | 02.04.16  |  0.1.0.0  | ConstellationGPS Lib now runs its own timing thread. You only     */
+/*          |           |           | need to ask for the data from external sources, not update        */
+/*          |           |           | and request.                                                      */
+/*------------------------------------------------------------------------------------------------------*/
 /* KKrupins | 02.04.16  |  0.0.0.7  | Added GPVTG Support                                               */
 /*          |           |           | Fixed bug with non-full GPVSG message parsing                     */
 /*------------------------------------------------------------------------------------------------------*/
