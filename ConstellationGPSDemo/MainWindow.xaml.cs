@@ -28,6 +28,7 @@ namespace NSConstellationGPSDemo
         private ObservableCollection<GPS_Sentence_GPGGA> Collection_GPGGA = new ObservableCollection<GPS_Sentence_GPGGA>();
         private ObservableCollection<GPS_Sentence_GPGSA> Collection_GPGSA = new ObservableCollection<GPS_Sentence_GPGSA>();
         private ObservableCollection<GPS_Sentence_GPGSV> Collection_GPGSV = new ObservableCollection<GPS_Sentence_GPGSV>();
+        private ObservableCollection<GPS_Sentence_GPVTG> Collection_GPVTG = new ObservableCollection<GPS_Sentence_GPVTG>(); 
 
         /// <summary>
         /// Demo Window Contructor
@@ -44,6 +45,10 @@ namespace NSConstellationGPSDemo
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
             timer.Tick += new EventHandler(timer_tick);
+
+            GPS = new ConstellationGPS();
+
+            Write_to_OutputWindow("Loaded Constellation GPS v" + GPS.getVersion() + "\n");
         }
 
         /// <summary>
@@ -63,6 +68,7 @@ namespace NSConstellationGPSDemo
                 Collection_GPGGA.Add(GPS.getGPGGA());
                 Collection_GPGSA.Add(GPS.getGPGSA());
                 Collection_GPGSV.Add(GPS.getGPGSV());
+                Collection_GPVTG.Add(GPS.getGPVTG());
 
                 // UI Scroll to most recent item
                 if (dataGrid.ItemsSource != null)
@@ -88,16 +94,19 @@ namespace NSConstellationGPSDemo
         {
             try
             {
-                // Do not open an already open port, close it first to avoid issues
+                
                 if (GPS != null)
+                {
+                    // Do not open an already open port, close it first to avoid issues
                     GPS.Close();
 
-                // Reconfigure Port as UI specifies
-                GPS = new ConstellationGPS(cb_Port.SelectedItem.ToString(), Convert.ToInt32(cb_Baud.SelectedValue));
-
-
-                // Open new port
-                GPS.Open();
+                    // Reconfigure Port as UI specifies
+                    GPS.setBaud(Convert.ToInt32(cb_Baud.SelectedValue));
+                    GPS.setPort(cb_Port.SelectedItem.ToString());
+                    
+                    // Open new port
+                    GPS.Open();
+                }
 
                 timer.Start();
 
@@ -220,6 +229,9 @@ namespace NSConstellationGPSDemo
                     break;
                 case "$GPGSV":
                     dataGrid.ItemsSource = Collection_GPGSV;
+                    break;
+                case "$GPVTG":
+                    dataGrid.ItemsSource = Collection_GPVTG;
                     break;
                 default:
                     Write_to_OutputWindow(cb_available_msgs.Items[cb_available_msgs.SelectedIndex].ToString() + " Parsing unavailable.\n");

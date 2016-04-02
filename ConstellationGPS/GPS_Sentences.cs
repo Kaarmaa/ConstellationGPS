@@ -22,6 +22,9 @@ namespace NSConstellationGPS.GPS_Sentences
         private GPS_Sentence_GPGSV _gpgsv;
         public GPS_Sentence_GPGSV GPGSV { get { return _gpgsv; } set { _gpgsv = value; OnPropertyChanged("GPGSV"); } }
 
+        private GPS_Sentence_GPVTG _gpvtg;
+        public GPS_Sentence_GPVTG GPVTG { get { return _gpvtg; } set { _gpvtg = value; OnPropertyChanged("GPVTG"); } }
+
         private ObservableCollection<string> avMsgs = new ObservableCollection<string>();
 
         [field: NonSerialized]
@@ -46,6 +49,7 @@ namespace NSConstellationGPS.GPS_Sentences
             _gpgga = new GPS_Sentence_GPGGA();
             _gpgsa = new GPS_Sentence_GPGSA();
             _gpgsv = new GPS_Sentence_GPGSV();
+            _gpvtg = new GPS_Sentence_GPVTG();
         }
 
         /// <summary>
@@ -67,10 +71,11 @@ namespace NSConstellationGPS.GPS_Sentences
             int error = 0;
 
             //Individual Sentence Parsing Calls 
-            if (_gprmc.Parse(split)) error++;
+            if(_gprmc.Parse(split)) error++;
             if(_gpgga.Parse(split)) error++;
             if(_gpgsa.Parse(split)) error++;
             if(_gpgsv.Parse(split)) error++;
+            if(_gpvtg.Parse(split)) error++;
 
 
             //TODO: Can check here if error > 0, and throw a better error than a FAIL.
@@ -528,21 +533,100 @@ namespace NSConstellationGPS.GPS_Sentences
                     if (SVS.Length < arr_size)
                         Array.Resize(ref _svs, arr_size);
 
-
+                    int local_offset = 0;
                     for (int locind = 0; locind < 4; locind++)
                     {
                         int current_index = ((Current_Message - 1) * 4) + locind;
-                        if (current_index < Total_SV)
+                        if (current_index >= Total_SV)
                             break;
 
-                        int local_offset = (locind + 1) * 4;
+                        local_offset = (locind + 1) * 4;
                         SVS[current_index].PRN = String_to_Int(buffer[i + local_offset]);
                         SVS[current_index].Elevation = String_to_Int(buffer[i + local_offset + 1]);
                         SVS[current_index].Azimuth = String_to_Int(buffer[i + local_offset + 2]);
                         SVS[current_index].SNR = String_to_Int(buffer[i + local_offset + 3]);
                     }
                     
-                    Checksum = "*" + buffer[i + 20];
+                    Checksum = "*" + buffer[i + local_offset + 4];
+
+                    valid_data = true;
+                }
+            }
+            return valid_data;
+        }
+    }
+
+    /// <summary>
+    /// GPVTG Sentence Structure
+    /// </summary>
+    public class GPS_Sentence_GPVTG : GPS_Sentence_Base
+    {
+        // Track Made Good (Degrees)
+        private double _trackMadeGood;
+        public double TrackMadeGood { get { return _trackMadeGood; } set { _trackMadeGood = value; OnPropertyChanged("TrackMadeGood"); } }
+
+        // Track made good, relative to true north (Always T)
+        private char _fixedText_TrueNorth;
+        public char FixedText_TrueNorth { get { return _fixedText_TrueNorth; } set { _fixedText_TrueNorth = value; OnPropertyChanged("RelativetoTrueNorth"); } }
+
+        // Magnetic Track (Degrees)
+        private double _magneticTrack;
+        public double MagneticTrack { get { return _magneticTrack; } set { _magneticTrack = value; OnPropertyChanged("MagneticTrack"); } }
+        
+        // Track made good, relative to true north (Always T)
+        private char _fixedText_Magnetic;
+        public char FixedText_Magnetic { get { return _fixedText_Magnetic; } set { _fixedText_Magnetic = value; OnPropertyChanged("FixedText_Magnetic"); } }
+
+        //  Track Speed in Knots
+        private double _trackSpeed_Knots;
+        public double TrackSpeed_Knots { get { return _trackSpeed_Knots; } set { _trackSpeed_Knots = value; OnPropertyChanged("TrackSpeed_Knots"); } }
+        
+        // Track made good, relative to true north (Always T)
+        private char _fixedText_Knots;
+        public char FixedText_Knots { get { return _fixedText_Knots; } set { _fixedText_Knots = value; OnPropertyChanged("FixedText_Knots"); } }
+
+        // Track Speed in Km per Hour
+        private double _trackSpeed_KmH;
+        public double TrackSpeed_KmH { get { return _trackSpeed_KmH; } set { _trackSpeed_KmH = value; OnPropertyChanged("TrackSpeed_KmH"); } }
+
+        // Track made good, relative to true north (Always T)
+        private char _fixedText_KmH;
+        public char FixedText_KmH { get { return _fixedText_KmH; } set { _fixedText_KmH = value; OnPropertyChanged("FixedText_KmH"); } }
+        
+        // Fix
+        private char _fix;
+        public char Fix { get { return _fix; } set { _fix = value; OnPropertyChanged("Fix"); } }
+
+        // Checksum
+        private string _checksum;
+        public string Checksum { get { return _checksum; } set { _checksum = value; OnPropertyChanged("Checksum"); } }
+
+        /// <summary>
+        /// Parsing Function
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public override bool Parse(string[] buffer)
+        {
+            bool valid_data = false;
+
+            // TODO: Use Master's precalculated indicides to know where to parse. No search will be neceessary anymore.
+            for (int i = 0; i < buffer.Length - 16; i++)
+            {
+                if (String.Compare(buffer[i], "$GPVTG") == 0)
+                {
+                    Type = "$GPVTG";
+                    TrackMadeGood = String_to_Double(buffer[i + 1]);
+                    FixedText_TrueNorth = String_to_Char(buffer[i + 2]);
+                    TrackMadeGood = String_to_Double(buffer[i + 3]);
+                    FixedText_Magnetic = String_to_Char(buffer[i + 4]);
+                    TrackMadeGood = String_to_Double(buffer[i + 5]);
+                    FixedText_Knots = String_to_Char(buffer[i + 6]);
+                    TrackMadeGood = String_to_Double(buffer[i + 7]);
+                    FixedText_KmH = String_to_Char(buffer[i + 8]);
+                    Fix = String_to_Char(buffer[i + 9]);
+                    
+                    Checksum = "*" + buffer[i + 10];
 
                     valid_data = true;
                 }

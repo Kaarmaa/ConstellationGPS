@@ -3,7 +3,7 @@
     // This is just used as a local version note item
     class VersionControl
     {
-        private string _version = "0.0.0.6";
+        private string _version = "0.0.0.7";
         public string Version { get { return _version; } set { } }
     }
 }
@@ -12,6 +12,9 @@
 /********************************************************************************************************/
 /* USER     | Date      |   Version |   Issue                                                           */
 /********************************************************************************************************/
+/* KKrupins | 02.04.16  |  0.0.0.7  | Added GPVTG Support                                               */
+/*          |           |           | Fixed bug with non-full GPVSG message parsing                     */
+/*------------------------------------------------------------------------------------------------------*/
 /* KKrupins | 27.03.16  |  0.0.0.6  | Added GPGSV Support                                               */
 /*          |           |           | Better comments                                                   */
 /*------------------------------------------------------------------------------------------------------*/

@@ -36,8 +36,27 @@ namespace NSConstellationGPS
         private int _bytes_to_read;
         private int _bytes_read;
         private string _buffer;
-        private bool _initialized = false;
         private VersionControl version = new VersionControl();
+
+        // GPS Communication Configuration Parameters
+        private string _port;
+        private int _baud;
+        private int _timeout;
+        private bool _initialized = false;
+
+        public ConstellationGPS(int timeout = 1000)
+        {
+            _gps_stream = new char[BUFFER_LENGTH];
+            Array.Clear(_gps_stream, 0, BUFFER_LENGTH);
+
+            _bytes_to_read = 1000;
+
+            _buffer = "";
+            
+            setTimeout(timeout);
+
+            _initialized = false;
+        }
 
         /// <summary>
         /// Default constructor for Constellation GPS
@@ -53,13 +72,17 @@ namespace NSConstellationGPS
             _bytes_to_read = 1000;
 
             _buffer = "";
+            
+            setPort(port);
+            setBaud(baud);
+            setTimeout(timeout);
 
-            _gps_comm = new SerialPort(port, baud);
+            _gps_comm = new SerialPort(_port, _baud);
             _gps_comm.DataBits = 8;
             _gps_comm.StopBits = StopBits.One;
             _gps_comm.Parity = Parity.None;
-            _gps_comm.ReadTimeout = timeout;
-            
+            _gps_comm.ReadTimeout = _timeout;
+
             _initialized = true;
         }
 
@@ -73,6 +96,12 @@ namespace NSConstellationGPS
             {
                 try
                 {
+                    _gps_comm = new SerialPort(_port, _baud);
+                    _gps_comm.DataBits = 8;
+                    _gps_comm.StopBits = StopBits.One;
+                    _gps_comm.Parity = Parity.None;
+                    _gps_comm.ReadTimeout = _timeout;
+
                     // Do not open an already open port, close it first to avoid issues
                     if (_gps_comm.IsOpen)
                         _gps_comm.Close();
@@ -90,6 +119,39 @@ namespace NSConstellationGPS
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Setter for the GPS COM Port
+        /// </summary>
+        /// <param name="port"></param>
+        public void setPort(string port)
+        {
+            _port = port;
+
+            if (_port != "" && _baud != -1)
+                _initialized = true;
+        }
+
+        /// <summary>
+        /// Setter for the GPS Baud Port
+        /// </summary>
+        /// <param name="baud"></param>
+        public void setBaud(int baud)
+        {
+            _baud = baud;
+
+            if (_port != "" && _baud != -1)
+                _initialized = true;
+        }
+
+        /// <summary>
+        /// Setter for the Constellation GPS buffer paring interval
+        /// </summary>
+        /// <param name="timeout_ms"></param>
+        public void setTimeout(int timeout_ms)
+        {
+            _timeout = timeout_ms;
         }
 
         /// <summary>
@@ -270,27 +332,7 @@ namespace NSConstellationGPS
         public GPS_Sentence_GPGSV getGPGSV()
         {
             GPS_Sentence_GPGSV tmp = new GPS_Sentence_GPGSV();
-
-            //tmp.Azimuth0 = Master.GPGSV.Azimuth0;
-            //tmp.Azimuth1 = Master.GPGSV.Azimuth1;
-            //tmp.Azimuth2 = Master.GPGSV.Azimuth2;
-            //tmp.Azimuth3 = Master.GPGSV.Azimuth3;
-
-            //tmp.Elevation0 = Master.GPGSV.Elevation0;
-            //tmp.Elevation1 = Master.GPGSV.Elevation1;
-            //tmp.Elevation2 = Master.GPGSV.Elevation2;
-            //tmp.Elevation3 = Master.GPGSV.Elevation3;
-
-            //tmp.PRN0 = Master.GPGSV.PRN0;
-            //tmp.PRN1 = Master.GPGSV.PRN1;
-            //tmp.PRN2 = Master.GPGSV.PRN2;
-            //tmp.PRN3 = Master.GPGSV.PRN3;
-
-            //tmp.SNR0 = Master.GPGSV.SNR0;
-            //tmp.SNR1 = Master.GPGSV.SNR1;
-            //tmp.SNR2 = Master.GPGSV.SNR2;
-            //tmp.SNR3 = Master.GPGSV.SNR3;
-
+            
             for (int i = 0; i < Master.GPGSV.SVS.Length; i++)
             {
                 tmp.SVS[i] = Master.GPGSV.SVS[i];
@@ -300,6 +342,29 @@ namespace NSConstellationGPS
             tmp.Total_Messages = Master.GPGSV.Total_Messages;
             tmp.Total_SV = Master.GPGSV.Total_SV;
             tmp.Type = Master.GPGSV.Type;
+
+            return tmp;
+        }
+
+        /// <summary>
+        /// Gets a copy of the newest Master.GPVTG sentence and returns it to caller 
+        /// </summary>
+        /// <returns></returns>
+        public GPS_Sentence_GPVTG getGPVTG()
+        {
+            GPS_Sentence_GPVTG tmp = new GPS_Sentence_GPVTG();
+
+            tmp.Checksum = Master.GPVTG.Checksum;
+            tmp.Fix = Master.GPVTG.Fix;
+            tmp.FixedText_KmH = Master.GPVTG.FixedText_KmH;
+            tmp.FixedText_Knots = Master.GPVTG.FixedText_Knots;
+            tmp.FixedText_Magnetic = Master.GPVTG.FixedText_Magnetic;
+            tmp.FixedText_TrueNorth = Master.GPVTG.FixedText_TrueNorth;
+            tmp.MagneticTrack = Master.GPVTG.MagneticTrack;
+            tmp.TrackMadeGood = Master.GPVTG.TrackMadeGood;
+            tmp.TrackSpeed_KmH = Master.GPVTG.TrackSpeed_KmH;
+            tmp.TrackSpeed_Knots = Master.GPVTG.TrackSpeed_Knots;
+            tmp.Type = Master.GPVTG.Type;
 
             return tmp;
         }
