@@ -41,6 +41,7 @@
         <Button x:Name="btn_Stop" Content="Stop" Click="btn_Stop_Click" Grid.Column="3" Grid.Row="3" Grid.RowSpan="3" Margin="5"/>
         <ComboBox x:Name="cb_available_msgs" Grid.Column="4" Grid.Row="3" Grid.RowSpan="3" Margin="5,0,5,5" Grid.ColumnSpan="2" SelectionChanged="cb_available_msgs_SelectionChanged"/>
         <Label x:Name="label_Copy1" Content="Available Messages:" VerticalContentAlignment="Center" Margin="5" Padding="2" HorizontalContentAlignment="Left" Grid.Column="4" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="2" />
+        <Image x:Name="image" Grid.Column="1" Source="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" MouseDown="image_MouseDown" Grid.Row="2" Grid.RowSpan="3" HorizontalAlignment="Left" Width="58" Height="20" VerticalAlignment="Top" Margin="0,2,0,0"/>
 
     </Grid>
 </Window>

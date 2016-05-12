@@ -74,11 +74,11 @@ namespace NSConstellationGPSDemo
                 if (dataGrid.ItemsSource != null)
                     dataGrid.ScrollIntoView(dataGrid.Items[dataGrid.Items.Count - 1]);
 
-                //string text = cb_available_msgs.Text;
-               // cb_available_msgs.ItemsSource = null;
+                string text = cb_available_msgs.Text;
+                cb_available_msgs.ItemsSource = null;
                 cb_available_msgs.ItemsSource = GPS.getAvailableMessages();
-                //cb_available_msgs.Text = text;
-                //cb_available_msgs.UpdateLayout();
+                cb_available_msgs.Text = text;
+                cb_available_msgs.UpdateLayout();
             }
             else
             {
@@ -243,6 +243,11 @@ namespace NSConstellationGPSDemo
                         break;
                 }
             }
+        }
+
+        private void image_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9G8SW3CXLWUNU");
         }
     }
 }

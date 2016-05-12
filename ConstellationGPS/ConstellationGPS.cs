@@ -116,7 +116,7 @@ namespace NSConstellationGPS
                     _main_update.Start();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -204,7 +204,7 @@ namespace NSConstellationGPS
 
                     _main_update.Stop();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return false;
                 }
